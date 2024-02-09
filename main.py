@@ -5,8 +5,9 @@ from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import NoSuchElementException
 from time import sleep
 from selenium.webdriver.common.by import By
+from datetime import datetime
 
-import sys, re
+import sys, re, csv
 from random import randint
 
 FB_URL = "https://www.facebook.com/login/device-based/regular/login/"
@@ -242,6 +243,18 @@ def getValueDictionary(key, dictionary_array):
     return response
 
 
+def print_row(data_array):
+    csvOut = '%s.csv' % datetime.now().strftime("%Y_%m_%d_%H%M")
+    # sleep(3)
+    writer = csv.writer(open(csvOut, 'w', encoding="utf-8"))
+    for item in data_array:
+        print("print_item")
+        print(item)
+        writer.writerow(item)
+
+
+
+
 # Loading logo
 art = '''
   _____  ____         ____    ____  ____      _     ____   _____  ____  
@@ -263,13 +276,13 @@ fb_names = get_friend_names()
 fb_links = get_profile_link()
 fb_numbers, fb_emails, fb_genders, fb_birth_dates, fb_birth_years, fb_languages = get_data_info()
 sleep(randint(4, 8))
+item_array = []
 
 # Print final result in to console, also save in text file current directory
 i = 0
 for fb_link in fb_links:
 
     username = get_profile_from_url(fb_link)
-
     fb_name_i = ""
     fb_link_i = ""
     fb_number_i = ""
@@ -296,13 +309,17 @@ for fb_link in fb_links:
     if containkeyInDictionary(username, fb_languages):
         fb_language_i = getValueDictionary(username, fb_languages)
 
-    data = f"{fb_name_i} | {fb_link_i} | {fb_number_i} | {fb_email_i} | {fb_gender_i} | " \
-           f"{fb_birth_date_i}-{fb_birth_year_i} | {fb_language_i}"
+    #data = f"{fb_name_i} | {fb_link_i} | {fb_number_i} | {fb_email_i} | {fb_gender_i} | " \
+    #       f"{fb_birth_date_i}-{fb_birth_year_i} | {fb_language_i}"
 
+
+    item_array.append([fb_name_i, fb_link_i, fb_number_i, fb_email_i, fb_gender_i, fb_birth_date_i, fb_birth_year_i,
+              fb_language_i])
+
+    #print(item_array)
     i = i + 1
-    print(data)
-    with open("fb_data.txt", "a", encoding="utf-8") as file:
-        file.write(f"{data}\n")
+
+print_row(item_array)
 
 # Closing the selenium driver
 driver.quit()
